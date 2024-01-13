@@ -1,0 +1,28 @@
+---------------------------------------------------------------------------------------------------
+Date: 16. 05. 2021.
+Version: 0.0.4
+  Info:
+    - Increase effect of cloud of smoke
+  Bugfixes:
+    - Fix crash on entity_died
+---------------------------------------------------------------------------------------------------
+Version: 0.0.3
+Date: 13. 05. 2021.
+  Info:
+    - Decrease cooldown of capsules
+    - Add subgroup for recipes
+---------------------------------------------------------------------------------------------------
+Version: 0.0.2
+Date: 12. 05. 2021.
+  Info:
+    - Change recipes for time bomb and capsule of cloud of smoke
+    - Addd sand-rock-big as threat protection
+    - Add lure to bait biters and send them to another place
+    - Improve compatibility with others mods changing run speed
+  Bugfixes:
+    - Speed return to normal when entering stealth mode
+---------------------------------------------------------------------------------------------------
+Version: 0.0.1
+Date: 11. 05. 2021.
+  Info:
+    - Initial release

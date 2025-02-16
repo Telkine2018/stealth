@@ -56,7 +56,7 @@ end
 
 local recipe = table.deepcopy(data.raw["recipe"]["pistol"])
 recipe.name = name
-recipe.result = name
+recipe.results = { { type = "item", name = name, amount = 1 } }
 
 data:extend {
   item,
@@ -147,12 +147,12 @@ recipe = {
   icon = gpath .. "icons/timebomb.png",
   icon_size = 64,
   energy_required = 0.5,
-  result = name,
+  results = { { type = "item", name = name, amount = 1 } },
   enabled = true,
   ingredients = {
-    { "iron-plate",         2 },
-    { "electronic-circuit", 1 },
-    { "coal",               1 }
+    { type = "item", name = "iron-plate",      amount = 2 },
+    { type = "item", name = "electronic-circuit", amount = 1 },
+    { type = "item", name = "coal",            amount = 1 }
   },
   order = "stealth-[timebomb]"
 }
@@ -172,8 +172,8 @@ entity.vision_distance = 1
 entity.dying_explosion = nil
 entity.dying_sound = nil
 entity.sound = nil
-entity.animation = util.empty_sprite(16)
-entity.run_animation = util.empty_sprite(16)
+entity.animation = util.empty_sprite()
+entity.run_animation = util.empty_sprite()
 
 data:extend { entity }
 
@@ -272,48 +272,26 @@ entity.action = {
 entity.animation = {
   animation_speed = 0.25,
   draw_as_glow = true,
-  filename = gpath .. "entity/smokecloud-capsule/smokecloud-capsule.png",
+  filename = gpath .. "entity/smokecloud-capsule/hr-smokecloud-capsule.png",
   frame_count = 16,
-  height = 29,
-  hr_version = {
-    animation_speed = 0.25,
-    draw_as_glow = true,
-    filename = gpath .. "entity/smokecloud-capsule/hr-smokecloud-capsule.png",
-    frame_count = 16,
-    height = 59,
-    line_length = 8,
-    priority = "high",
-    scale = 0.5,
-    shift = { 0.03125, 0.015625 },
-    width = 58
-  },
+  height = 59,
   line_length = 8,
   priority = "high",
+  scale = 0.5,
   shift = { 0.03125, 0.015625 },
-  width = 29
+  width = 58
 }
 entity.shadow = {
   animation_speed = 0.25,
   draw_as_shadow = true,
-  filename = gpath .. "entity/smokecloud-capsule/smokecloud-capsule-shadow.png",
+  filename = gpath .. "entity/smokecloud-capsule/hr-smokecloud-capsule-shadow.png",
   frame_count = 16,
-  height = 21,
-  hr_version = {
-    animation_speed = 0.25,
-    draw_as_shadow = true,
-    filename = gpath .. "entity/smokecloud-capsule/hr-smokecloud-capsule-shadow.png",
-    frame_count = 16,
-    height = 42,
-    line_length = 8,
-    priority = "high",
-    scale = 0.5,
-    shift = { 0.03125, 0.0625 },
-    width = 54
-  },
+  height = 42,
   line_length = 8,
   priority = "high",
+  scale = 0.5,
   shift = { 0.03125, 0.0625 },
-  width = 27
+  width = 54
 }
 
 entity.smoke = nil
@@ -389,11 +367,11 @@ recipe = {
   icon = item.icon,
   icon_size = 64,
   energy_required = 0.2,
-  result = name,
+  results = { { type = "item", name = name, amount = 1 } },
   enabled = true,
   ingredients = {
-    { "iron-plate", 1 },
-    { "coal",       2 }
+    { type = "item", name = "iron-plate", amount = 1 },
+    { type = "item", name = "coal",       amount = 2 }
   },
   order = "stealth-[smokecloud-capsule]"
 }
@@ -459,11 +437,11 @@ recipe               = {
   icon = item.icon,
   icon_size = 64,
   energy_required = 1,
-  result = name,
+  results = { { type = "item", name = name, amount = 1 } },
   enabled = true,
   ingredients = {
-    { "iron-plate", 1 },
-    { "wood",       5 }
+    { type = "item", name = "iron-plate", amount = 1 },
+    { type = "item", name = "wood",       amount = 5 }
   },
   order = "stealth-[lure-capsule]"
 }
@@ -489,48 +467,26 @@ projectile.action    = {
 projectile.animation = {
   animation_speed = 0.25,
   draw_as_glow = true,
-  filename = gpath .. "entity/lure-capsule/lure-capsule.png",
+  filename = gpath .. "entity/lure-capsule/hr-lure-capsule.png",
   frame_count = 16,
-  height = 29,
-  hr_version = {
-    animation_speed = 0.25,
-    draw_as_glow = true,
-    filename = gpath .. "entity/lure-capsule/hr-lure-capsule.png",
-    frame_count = 16,
-    height = 59,
-    line_length = 8,
-    priority = "high",
-    scale = 0.5,
-    shift = { 0.03125, 0.015625 },
-    width = 58
-  },
+  height = 59,
   line_length = 8,
   priority = "high",
+  scale = 0.5,
   shift = { 0.03125, 0.015625 },
-  width = 29
+  width = 58
 }
 projectile.shadow    = {
   animation_speed = 0.25,
   draw_as_shadow = true,
-  filename = gpath .. "entity/lure-capsule/lure-capsule-shadow.png",
+  filename = gpath .. "entity/lure-capsule/hr-lure-capsule-shadow.png",
   frame_count = 16,
-  height = 21,
-  hr_version = {
-    animation_speed = 0.25,
-    draw_as_shadow = true,
-    filename = gpath .. "entity/lure-capsule/hr-lure-capsule-shadow.png",
-    frame_count = 16,
-    height = 42,
-    line_length = 8,
-    priority = "high",
-    scale = 0.5,
-    shift = { 0.03125, 0.0625 },
-    width = 54
-  },
+  height = 42,
   line_length = 8,
   priority = "high",
+  scale = 0.5,
   shift = { 0.03125, 0.0625 },
-  width = 27
+  width = 54
 }
 
 projectile.smoke     = nil
@@ -541,3 +497,4 @@ lure.name            = name
 lure.max_health      = 200
 
 data:extend { item, recipe, projectile, lure }
+

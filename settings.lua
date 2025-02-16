@@ -15,7 +15,7 @@ local order = 0
 local function add_field(name, default_value, min_value, type)
 
     if not type then
-        type = "int-setting"
+        type = "double-setting"
     end
     local declaration = {
         type = type,
@@ -41,7 +41,7 @@ add_field("timebomb_damage", 8000, 1000)
 add_field("timebomb_radius", 16, 5)
 add_field("smokecloud_threat", 3, 1)
 add_field("protection_threat", 2, 1)
-add_field("protection_radius", 1.5, 1)
+add_field("protection_radius", 2.5, 1)
 add_field("died_bonus", 10, 1)
 add_field("exit_stealth_speed_modifier", 0.8, 0, "double-setting")
 

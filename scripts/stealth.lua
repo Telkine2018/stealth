@@ -1,11 +1,13 @@
+local migration = require("__flib__.migration")
 
+local tools = require("scripts.tools")
 
 local function get_config(name)
 	return settings.startup["stealth_" .. name].value
 end
 
 local stealth_radius = get_config("radius")
-local stealth_duration =  get_config("duration") * 60
+local stealth_duration = get_config("duration") * 60
 local stealth_cooldown = get_config("cooldown") * 60
 local gun_threat = get_config("gun_threat")
 local threat_decrease = get_config("threat_decrease")
@@ -77,10 +79,10 @@ local exit_stealth_mode
 ---@param player LuaPlayer
 ---@return table<string, any>
 local function get_vars(player)
-	local players = global.players
+	local players = storage.players
 	if not players then
 		players = {}
-		global.players = players
+		storage.players = players
 	end
 	local vars = players[player.index]
 	if not vars then
@@ -234,11 +236,11 @@ exit_stealth_mode = function(player, vars)
 	frame[time_name].value = 0
 	frame[threat_name].value = 0
 	if vars.marker_id then
-		rendering.destroy(vars.marker_id)
+		vars.marker_id.destroy()
 		vars.marker_id = nil
 	end
 	if vars.circle_id then
-		rendering.destroy(vars.circle_id)
+		vars.circle_id.destroy()
 		vars.circle_id = nil
 	end
 	remove_center(player)
@@ -270,22 +272,24 @@ local function enter_stealth_mode(player, vars)
 		local surface = player.surface
 		local enemies = surface.find_entities_filtered { type = "unit", force = "enemy", position = player.position, radius = 3 * stealth_radius }
 
-		local function check_targeting(c)
-			if c == nil then return false end
-			local type = c.type
-			if type == defines.command.attack and c.target == character then
+		---@param command Command
+		---@return boolean
+		local function check_targeting(command)
+			if not command then return false end
+			local type = command.type
+			if type == defines.command.attack and command.target == character then
 				return true
 			elseif type == defines.command.compound then
-				for _, ic in pairs(c.commands) do
-					if check_targeting(ic) then return true end
+				for _, subCommand in pairs(command.commands) do
+					if check_targeting(subCommand) then return true end
 				end
 			end
 			return false
 		end
 
 		for _, enemy in ipairs(enemies) do
-			if check_targeting(enemy.command) or check_targeting(enemy.distraction_command) then
-				enemy.set_command { type = defines.command.wander }
+			if enemy.commandable and check_targeting(enemy.commandable.command) then
+				enemy.commandable.set_command { type = defines.command.wander }
 			end
 		end
 	end
@@ -346,8 +350,10 @@ local function update_timer(player, vars)
 				end
 			end
 
-			process_protections(surface.find_entities_filtered { position = player_pos, radius = protection_radius, type = { "tree", "cliff" } })
-			process_protections(surface.find_entities_filtered { position = player_pos, radius = protection_radius, name = { "rock-big", "rock-huge", "sand-rock-big" } })
+			process_protections(surface.find_entities_filtered
+				{ position = player_pos, radius = protection_radius, type = { "tree", "cliff" } })
+			process_protections(surface.find_entities_filtered { position = player_pos, radius = protection_radius, name =
+			{ "big-rock", "huge-rock", "big-sand-rock" } })
 		end
 
 		if threat > 100 then
@@ -381,7 +387,7 @@ local function update_timer(player, vars)
 end
 
 local function on_nth_tick()
-	local players = global.players
+	local players = storage.players
 	if not players then return end
 	for index, vars in pairs(players) do
 		local player = game.players[index]
@@ -391,10 +397,10 @@ local function on_nth_tick()
 			update_timer(player, vars)
 		end
 	end
-	if global.timebombs then
+	if storage.timebombs then
 		local tick = game.tick
 		local exploded = false
-		for index, bomb_info in ipairs(global.timebombs) do
+		for index, bomb_info in ipairs(storage.timebombs) do
 			local bomb = bomb_info.entity
 			local remain = (bomb_info.start + bomb_info.delay) - tick
 			if remain <= 0 then
@@ -411,12 +417,12 @@ local function on_nth_tick()
 
 		if exploded then
 			local new_timebombs = {}
-			for index, bomb_info in ipairs(global.timebombs) do
+			for index, bomb_info in ipairs(storage.timebombs) do
 				if not bomb_info.exploded then
 					table.insert(new_timebombs, bomb_info)
 				end
 			end
-			global.timebombs = new_timebombs
+			storage.timebombs = new_timebombs
 		end
 	end
 end
@@ -448,7 +454,7 @@ end
 
 ---@param e EventData.on_built_entity
 local function on_build(e)
-	local entity = e.created_entity
+	local entity = e.entity
 	if entity.name ~= timebomb_name then return end
 
 	local player = game.players[e.player_index]
@@ -475,10 +481,10 @@ local function on_build(e)
 		return
 	end
 
-	local timebombs = global.timebombs
+	local timebombs = storage.timebombs
 	if not timebombs then
 		timebombs = {}
-		global.timebombs = timebombs
+		storage.timebombs = timebombs
 	end
 	table.insert(timebombs,
 		{
@@ -532,3 +538,26 @@ script.on_event(defines.events.on_entity_died, on_entity_died)
 script.on_event(defines.events.on_built_entity, on_build)
 script.on_event(defines.events.on_script_trigger_effect, on_script_trigger_effect)
 script.on_event(defines.events.on_trigger_created_entity, on_trigger_created_entity)
+
+local function migration_2_0_1()
+	for _, player in pairs(game.players) do
+		local vars = tools.get_vars(player);
+		if vars.marker_id then
+			vars.marker_id = rendering.get_object_by_id(vars.marker_id --[[@as integer ]])
+		end
+		if vars.circle_id then
+			vars.circle_id = rendering.get_object_by_id(vars.circle_id --[[@as integer ]])
+		end
+	end
+end
+
+local migrations_table = {
+
+	["2.0.1"] = migration_2_0_1,
+}
+
+local function on_configuration_changed(data)
+	migration.on_config_changed(data, migrations_table)
+end
+
+script.on_configuration_changed(on_configuration_changed)

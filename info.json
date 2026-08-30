@@ -6,8 +6,8 @@
   "contact": "",
   "homepage": "",
   "description": "A survival kit with stealth management for early game",
-  "factorio_version": "2.0",
+  "factorio_version": "2.1",
   "dependencies": [
-		"base >= 2.0"
+		"base >= 2.1"
 	]
 }
